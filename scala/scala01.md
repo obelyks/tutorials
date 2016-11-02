@@ -24,16 +24,21 @@ CBN vyhodnoti parametr funkce teprve jestli je uvnitr fce potrebuje a klidne vic
 cbv terminates=>cbn terminates: naopak to neplati
 
 parametry fce
-> CBV scala default
-> => CBN
+> * CBV scala default
+> * => CBN
+
+
 ```scala
 def constOne(x: Int, y: => Int) = 1
 constOne(1+2, loop)
 constOne(loop, 1+2)
+```
 
-def CBN //eval at each use
-val CBV //eval at definition
+definice promennych
+> * def CBN //eval at each use
+> * val CBV //eval at definition
 
+```scala
 def sqrtIter(guess: Double, x: Double): Double =
     if (isGoodEnough(guess, x)) guess
     else sqrtIter(improve(guess, x), x)
@@ -44,6 +49,7 @@ def sqrt(x: Double) = {
     def isGoodEnough(guess: Double)     = abs(square(guess) - x) < 0.001
     sqrtIter(1.0)
 }
+
 @tailrec
 def gcd(a: Int, b: Int): Int = if (b == 0) a else gcd(b, a % b)
 ```
