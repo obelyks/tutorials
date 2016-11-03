@@ -3,7 +3,7 @@
 class Person(val name:String, val age:Int)
 val people: Array[Person]
 val (minors,adults) = people     partition (_.age < 18 )
-val (minors,adults) = people.par partition (_.age < 18 )  //parallell
+val (minors,adults) = people.par partition (_.age < 18 )  //parallel
 
 actor {
     receive {
