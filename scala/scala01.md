@@ -27,7 +27,6 @@ parametry fce
 > * CBV scala default
 > * => CBN
 
-
 ```scala
 def constOne(x: Int, y: => Int) = 1
 constOne(1+2, loop)
@@ -95,8 +94,8 @@ def sum(f: Int => Int)(a: Int, b: Int): Int = if (a > b) 0 else f(a) + sum(f)(a 
 > fuknce parametr typu funkce a vraci funkci (2 int parametry vraci 1 int)
 
 ## II.example
-    priklad s fixed point: to neznam nebo jsme zapomnel podivat se na to
-    ```scala
+priklad s fixed point: to neznam nebo jsme zapomnel podivat se na to
+```scala
     val tolerance = 0.0001
     def isCloseEnough(x: Double, y: Double) = abs((x - y) / x) / x < tolerance
     def fixedPoint(f: Double => Double)(firstGuess: Double) = {
@@ -117,6 +116,7 @@ def sum(f: Int => Int)(a: Int, b: Int): Int = if (a > b) 0 else f(a) + sum(f)(a 
 |,[...] an option (0 or 1),{...} a repetition (0 or more).
 
 # III Functions And Data (Classes)
+
 ```scala
     class Rational(x: Int, y: Int) {
     require(y > 0, ”denominator must be positive”) ;;IllegalArgument
