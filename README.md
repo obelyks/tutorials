@@ -8,3 +8,4 @@ mam v planu
  - [ ] angular js pro GUI (clj?)
  - [ ] wicket table sortable nice rich ui ajax existujici nejakou peknou najit
  - [ ] aplikace v clojure a deploy na wedosu
+ - [ ] aplikace s cljs a angular + figwheel toaleaznekdy
