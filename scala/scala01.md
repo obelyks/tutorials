@@ -73,6 +73,7 @@ def sumCubes(a: Int, b: Int) = sum(x => x * x * x, a, b)
 
 ## Currying
 funkce co vraci fci se 2 parametrama a vracejici 1 cislo
+
 ```scala
 def sum(f: Int => Int): (Int, Int) => Int = {
     def sumF(a: Int, b: Int): Int = if (a > b) 0 else f(a) + sumF(a + 1, b)
@@ -82,9 +83,11 @@ def sum(f: Int => Int): (Int, Int) => Int = {
 Volamejako sum (cube) (1, 10)  jetotosame jako== (sum (cube)) (1, 10) 
 
 Dalsi zkratka:umoznuje volat i jako sum cube
+
 ```scala
 def sum(f: Int => Int)(a: Int, b: Int): Int = if (a > b) 0 else f(a) + sum(f)(a + 1, b)
 ```
+
 ### Typ
 > (Int => Int) => (Int, Int) => Int
 > to je to same jako
