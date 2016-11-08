@@ -393,6 +393,87 @@ def insert(x: Int, xs: List[Int]): List[Int] = xs match {
     case y :: ys => if (x<=y) x::xs else y::insert(x,ys)
 }
 ```
+Dalsi metody:
+ * length
+ * last (opak head)   slozitost n |xs|
+ * init (opak rest/tail)
+ * take n
+ * drop n
+ * xs (n)
+ * xs ++ ys    concat complexity=|xs|
+ * reverse          complexity n*n (later better impl)
+ * updated (n,x)
+ * indexOf x
+ * contains x
+ * xs ::: ys     ys.:::(xs) =prepend listu na listu
+ * xs splitAt n  // vraci tuple
+
+Rozdil mezi ::: concat a ++???? 
+
+```scala
+def last[T](xs: List[T]): T = xs match {
+    case List() => throw new Error("last of empty list")
+    case List(x) => x
+    case y :: ys => last(ys)
+}
+def init[T](xs: List[T]): List[T] = xs match {
+    case List() => throw new Error(ŏinit of empty listŏ)
+    case List(x) => List() //doplneno
+    case y :: ys => y :: init (ys) //dopl, case se provadi v poradi v jakem jsou napsane
+}
+def concat[T](xs: List[T], ys: List[T]) = xs match {
+    case List() => ys
+    case z :: zs => z :: concat(zs, ys)  //complexity |xs|    
+}
+def reverse[T](xs: List[T]): List[T] = xs match {
+    case List() => List()
+    case y :: ys => reverse(ys) ++ List(y)
+}
+def removeAt[T](xs: List[T], n: Int) = (xs take n) ::: (xs drop n+1)
+
+//TODO
+def flatten(xs: List[Any]): List[Any] = ???
+flatten(List(List(1, 1), 2, List(3, List(5, 8))))   > res0: List[Any] = List(1, 1, 2, 3, 5, 8)
+```
+merge sort
+    1=setrideny
+    >1=rozdelnapul,setrid pulky, spoj(se zatridovanim???nebone??) odopoved fvefci merge
+```scala
+def msort(xs: List[Int]): List[Int] = {
+    val n = xs.length/2
+    if (n == 0) xs
+    else {
+        def merge(xs: List[Int], ys: List[Int]) = ???
+        val (fst, snd) = xs splitAt n
+        merge(msort(fst), msort(snd))
+    }
+}
+def merge(xs: List[Int], ys: List[Int]) = xs match { //improved Later    
+    case Nil =>  ys
+    case x :: xs1 => ys match {
+        case Nil => xs
+        case y :: ys1 => if (x < y) x :: merge(xs1, ys) else y :: merge(xs, ys1)
+    }
+}
+//LEPSI!!!! s pair pattern matching
+def merge(xs: List[Int], ys: List[Int]): List[Int] = (xs, ys) match {
+    case (Nil,ys) => ys
+    case (xs,Nil) => xs
+    case (x::xs1, y:ys1) => if (x<y) x::merge(xs1,ys) else yy :: merge(xs,ys1)
+}
+```
+* Pair (x1,x2)
+* Tuple (x1,x2,...xN)
+        case class Tuple2[T1, T2](_1: +T1, _2: +T2) {
+            override def toString = ”(” + _1 + ”,” + _2 +”)”
+        }
+        val (label, value) = pair
+        val label = pair._1
+        val value = pair._2
+
+
+
+
 
 
 

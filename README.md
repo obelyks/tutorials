@@ -9,3 +9,4 @@ mam v planu
  - [ ] wicket table sortable nice rich ui ajax existujici nejakou peknou najit
  - [ ] aplikace v clojure a deploy na wedosu
  - [ ] aplikace s cljs a angular + figwheel toaleaznekdy
+ - [ ] alfresco
