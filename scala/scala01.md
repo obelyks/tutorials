@@ -417,7 +417,7 @@ def last[T](xs: List[T]): T = xs match {
     case y :: ys => last(ys)
 }
 def init[T](xs: List[T]): List[T] = xs match {
-    case List() => throw new Error(ŏinit of empty listŏ)
+    case List() => throw new Error("init of empty list")
     case List(x) => List() //doplneno
     case y :: ys => y :: init (ys) //dopl, case se provadi v poradi v jakem jsou napsane
 }
@@ -471,8 +471,300 @@ def merge(xs: List[Int], ys: List[Int]): List[Int] = (xs, ys) match {
         val label = pair._1
         val value = pair._2
 
+## Implicit Parameters
+
+``scala        
+def msort[T](xs: List[T])(lt: (T, T) => Boolean) = {
+    ...
+    merge(msort(fst)(lt), msort(snd)(lt))
+} 
+if (lt(x, y)) {}//v merge emtode misto <
+//Calls
+val xs = List(-5, 6, 3, 2, 7)
+val fruit = List(”apple”, ”pear”, ”orange”, ”pineapple”)
+merge(xs)((x: Int, y: Int) => x < y)    
+merge(fruit)((x: String, y: String) => x.compareTo(y) < 0)
 
 
+//pouziti misto toho: scala.math.Ordering[T]
+def msort[T](xs: List[T])(ord: Ordering) =
+    def merge(xs: List[T], ys: List[T]) =
+    ... if (ord.lt(x, y)) ...
+merge(msort(fst)(ord), msort(snd)(ord))     
+//!!! ord.lt(x,y)
+//calls
+msort(nums)(Ordering.Int)
+msort(fruits)(Ordering.String)
+
+def msort[T](xs: List[T])(implicit ord: Ordering) =
+msort(nums)  //najde to z typu parrametru compiler
+msort(fruits)
+```
+
+## higher order functions
+xs map (x => x * factor)
+xs filter (x => x > 0)
+xs filterNot p
+xs partition p (filter/not in single traversal)
+xs takeWhile p
+xs dropWhile p
+xs span p  (split-with pred coll)
+
+### reduce/folder
+def sum(xs: List[Int]) = (0 :: xs) reduceLeft ((x, y) => x + y)
+def product(xs: List[Int]) = (1 :: xs) reduceLeft ((x, y) => x * y)
+def sum(xs: List[Int]) = (0 :: xs) reduceLeft (_ + _) //every _ represents new parameter from left to right
+def product(xs: List[Int]) = (1 :: xs) reduceLeft (_ * _)
+foldleft s accumuatorem
+def sum(xs: List[Int]) = (xs foldLeft 0) (_ + _)
+def product(xs: List[Int]) = (xs foldLeft 1) (_ * _)
+```scala
+abstract class List[T] { //mozna implementace
+    def reduceLeft(op: (T, T) => T): T = this match {
+        case Nil => throw new Error("Nil.reduceLeft")
+        case x :: xs => (xs foldLeft x)(op)
+    }
+    def foldLeft[U](z: U)(op: (U, T) => U): U = this match {
+        case Nil => z
+        case x :: xs => (xs foldLeft op(z, x))(op)
+    }
+}
+```
+
+list.reduceLeft op = (+ (+ (+ x1 x2) x3) ...xN)
+list.reduceRight op = (+ x1 (+ x2 ..))
+(List(x1, ..., xn) foldRight acc)(op)
+```scala
+def reduceRight(op: (T, T) => T): T = this match {
+    case Nil => throw new Error("Nil.reduceRight")
+    case x :: Nil => x
+    case x :: xs => op(x, xs.reduceRight(op))
+}
+def foldRight[U](z: U)(op: (T, U) => U): U = this match {
+    case Nil => z
+    case x :: xs => op(x, (xs foldRight z)(op))
+}
+```
+pro associative a commutative je to stejne nekdy to nejde (treba :: s emusi volat na listu a ne na prvku
+```scala
+    def concat[T](xs: List[T], ys: List[T]): List[T] = (xs foldRight ys) (_ :: _)
+///Ex: def reverse[a](xs: List[T]): List[T] = (xs foldLeft List[T]())((xs, x) => x :: xs)    //typ List[T]() je potreba pro type inference(to je zas co?)
+///TODO:
+def mapFun[T, U](xs: List[T], f: T => U): List[U] = (xs foldRight List[U]())( ??? )
+def lengthFun[T](xs: List[T]): Int = (xs foldRight 0)( ??? )
+```
+
+# VI Collections
+List: linear access
+Vector: very shallow tree: more balanced access than list 32, 232*32=2^10,2^15,2^20,...
+val nums = Vector(1, 2, 3, -88)
+val people = Vector(”Bob”, ”James”, ”Peter”)
+Metody jako na Listu krome:
+    * x +: xs   //x na zacatku
+    * xs :+ x   //x na konci  :je tam,kde je collection
+    * complecity pridavani log32(N) object creation
+CollectionClasses:
+    * List Vector  (String Array Range) allsubcla of Seq  ,IndexedSequence(Vectgor,Range)
+    * Seq(uence),Set,Map
+    * Iterable
+Range
+```scala
+val r: Range = 1 until 5  //1,2,3,4
+val s: Range = 1 to  5    //1,2,3,4,5
+            1 to 10 by 3  //1,4,7,10
+            6 to 1  by -2 //6,4,2
+```
+Sequence Operations
+* xs exists p       true if there is an element x of xs such that p(x) holds,false otherwise.
+* xs forall p       true if p(x) holds for all elements x of xs , false otherwise.
+* xs zip ys         A sequence of pairs drawn from corresponding elementsof sequences xs and ys .
+* xs.unzip          Splits a sequence of pairs xs into two sequences consisting of the first, respectively second halves of all pairs.
+* xs.flatMap f      Applies collection-valued function f to all elements of xs and concatenates the results //JAKY JE ROZDIL oproti MAP???
+* xs.sum            The sum of all elements of this numeric collection.
+* xs.product        The product of all elements of this numeric collection
+* xs.max            The maximum of all elements of this collection (an Ordering must exist)
+* xs.min            The minimum of all elements of this collection
+
+Examples...
+```scala
+    (1 to M) flatMap (x => (1 to N) map (y => (x, y)))
+
+    def scalarProduct(xs: Vector[Double], ys: Vector[Double]): Double = (xs zip ys).map(xy => xy._1 * xy._2).sum
+    def scalarProduct(xs: Vector[Double], ys: Vector[Double]): Double = (xs zip ys).map{ case (x, y) => x * y }.sum
+    ///{ case p1 => e1 ... case pn => en } =====      x => x match { case p1 => e1 ... case pn => en }
+
+    def isPrime(n: Int): Boolean = (2 until n) forall (d=> n%d != 0)
+```    
+
+combinatorics/Search
+(1 until n) map (i => (1 until i) map (j => (i, j)))
+flatten ===== (xss foldRight Seq[Int]())(_ ++ _)
+(1 until n) flatMap (i => (1 until i) map (j => (i, j)))  ========== 
+((1 until n) map    (i => (1 until i) map (j => (i, j)))).flatten
+
+result=(1 until n) flatMap (i => (1 until i) map (j => (i, j))) filter ( pair => isPrime(pair._1 + pair._2))
+
+### For Expression
+for ( s ) yield e // s =sequence of generators and filters
+    generator p<-e  //last generator vary fastest
+    filter if p
+for {s} yield e //generatory nepotrebuji stredniky a muzou byt na vice radcich    
+```scala
+        case class Person(name: String, age: Int)
+        for ( p <- persons if p.age > 20 ) yield p.name
+        persons filter (p => p.age > 20) map (p => p.name)
+
+flatmap priklad
+    for {
+        i <- 1 until n
+        j <- 1 until i
+        if isPrime(i + j)
+    } yield (i, j)        
+
+//ExampleDalsi    
+def scalarProduct(xs: List[Double], ys: List[Double]) : Double =    (for ((x,y)<-xs zip ys) yield x*y).sum
+```
+
+### Sets (6.3)
+```scala
+val fruit = Set(”apple”, ”banana”, ”pear”)
+val s = (1 to 6).toSet
+s map (_ + 2)
+fruit filter (_.startsWith == ”app”)
+s.nonEmpty
+///Iterables: co vsechno jde na setu volat
+```
+ * unordered
+ * no duplicate elements ... s map (_ / 2) // Set(2, 0, 3, 1)
+ * s contains 5 // true
+Example 
+```scala
+def queens(n: Int) = {
+    def placeQueens(k: Int): Set[List[Int]] = {
+        if (k == 0) Set(List())
+        else for {
+                queens <- placeQueens(k - 1)
+                    col <- 0 until n
+                    if isSafe(col, queens)
+            } yield col :: queens
+    }
+    placeQueens(n)
+}
+def isSafe(col: Int, queens: List[Int]): Boolean = {
+  val row =queens.length
+  //List(0,3,1)=>List((2,0),(1,3),(0,1))
+  val queensWithRows = (row-1 to 0 step -1).zip queens
+  queensWithRows.forAll { case (r,c) => col!=c  &&  match.abs(col-c)!=row-r //diagonala
+  }
+}
+def show(queens:List[Int])={
+  val lines= for (col< queens.reverse) yield Vector.fill(queens.length)("* ").updated(col,"X ").mkString
+  "\n" + (lines mkString "\n")
+}
+queens(4) map show
+(queens(8) take 3 map show) mkString "\n"
+```
+### Maps(6.4)
+
+```scala
+al romanNumerals = Map("I" -> 1, "V" -> 5, "X" -> 10)
+val capitalOfCountry = Map("US" -> "Washington", "Switzerland" -> "Bern")
+val countryOfCapital = capitalOfCountry map {case(x, y) => (y, x)}
+
+capitalOfCountry("andorra")
+capitalOfCountry get "andorra"  
+//Some(Washington),None :Option
+
+trait Option[+A]
+case class Some[+A](value: A) extends Option[A]
+object None extends Option[Nothing]
+
+def showCapital(country: String) = capitalOfCountry.get(country) match {
+  case Some(capital) => capital
+  case None => "missing data"
+}
+
+val fruit = List("apple", "pear", "orange", "pineapple")
+fruit sortWith (_.length < _.length) // List("pear", "apple", "orange", "pineapple")
+fruit.sorted // List("apple", "orange", "pear", "pineapple")
+
+//groupBy=discriminator function
+fruit groupBy (_.head) //> Map(p -> List(pear, pineapple),  //| a -> List(apple),  //| o -> List(orange))
+
+
+class Poly(terms0: Map[Int, Double]) {
+  def this(bindings: (Int, Double)*) = this(bindings.toMap)  //repeated parameter!!!!!!!
+  val terms = terms0 withDefaultValue 0.0   //total function, nehazi vyjimku nikdy, misto toho poskytuje 0
+  //++ def + (other: Poly) = new Poly(terms ++ (other.terms map adjust))  //to scala nema merge-with????
+  def + (other: Poly) = new Poly((other.terms foldLeft terms) (addTerm))
+  def addTerm(terms: Map[terms:Map[Int,Double],term:(Int,Double)): Map[Int,Double] ={
+    val (exp,coeff)=term
+    terms + (exp -> (coeff + terms(exp)))
+  }
+  def adjust(term: (Int, Double)): (Int, Double) = {
+    val (exp, coeff) = term
+    /*
+    terms get exp match {
+      case Some(coeff1)=>   exp -> (coeff + coeff1)
+      case None =>          exp -> coeff   // x->y je syntactic sugar pro (x,y) Pair(x,y)
+    }
+    */
+    exp -> (coeff + terms(exp))  // s defualt hodnotama se to zjednodusi
+  }
+  override def toString = (for ((exp, coeff) <- terms.toList.sorted.reverse) yield coeff+"x^"+exp) mkString " + "
+}
+```
+
+### posledni priklad 6.5 Phonebook 2000
+```scala
+val mnemonics = Map(’2’ -> ”ABC”, ’3’ -> ”DEF”, ’4’ -> ”GHI”, ’5’ -> ”JKL”,’6’ -> ”MNO”, ’7’ -> ”PQRS”, ’8’ -> ”TUV”, ’9’ -> ”WXYZ”)
+
+val mnem = Map('2' -> "ABC", '3' -> "DEF", '4' -> "GHI", '5' -> "JKL",'6' -> "MNO", '7' -> "PRQS", '8' -> "TUV", '9' -> "WXYZ")
+
+val in = Source.fromURL("http://lamp.epfl.ch/files/content/sites/lamp/files/teaching/progfun/linuxwords.txt")
+val words = in.getLines.toList filter(w => w forall(chr => chr.isLetter))
+
+val charCode: Map[Char, Char] = for ((digit, str) <- mnem; ltr <- str) yield ltr -> digit
+def wordCode(word: String): String = word.toUpperCase map charCode
+//wordCode("JAVA")
+//wordCode("Java")
+val wordsForNum: Map[String, Seq[String]] = words groupBy wordCode withDefaultValue Seq()
+//wordsForNum("JAVA")
+def encode(number: String): Set[List[String]] ={
+    if (number.isEmpty) Set(List())
+    else
+      { for {
+        split <- 1 to number.length        // find out what first word must be
+        word <- wordsForNum(number take split)
+        rest <- encode(number drop split)
+      } yield word :: rest
+    } toSet
+  }
+//encode("7225247386")
+def translate(number: String): Set[String] = encode(number). map(_ mkString " ")
+//translate("7225247386")
+type Word = String
+type Sentence = List[Word]
+type Occurrences = List[(Char, Int)]
+def wordOccurrences(w: Word): Occurrences =
+    w.groupBy(c => c.toLower)
+     .map(m => (m._1, m._2.length)).toList      //    w.groupBy(char => w.count(char))      
+    dictionary.map(word => wordOccurrences(word), word)  
+}
+```
+
+
+* ScalaCheatsheet LaurentPoulain  ?https://gist.github.com/jaturken/3976117
+* Scala school by twiter
+* Scala Exercises
+* Book(programming inScala)
+* scala web site/scaladoc
+
+Not
+* larger context
+* FP desing principles
+* State, mutable, what changes if we add it, pure functions??/
+* paral&distrib system: user immutability, dist.coll and big data
 
 
 
