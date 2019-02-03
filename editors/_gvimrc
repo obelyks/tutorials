@@ -1,0 +1,301 @@
+set nocompatible            " režim nekompatibility s editorem vi
+"execute pathogen#infect()
+
+"set textwidth=79  "at mi to nezalamuje radky!!
+"set textwidth=150  "at mi to nezalamuje radky!!
+"set wrapmargin=150  "at mi to nezalamuje radky!!
+set textwidth=0
+set formatoptions-=tc  "See :help fo-table for more info.
+set wildmenu
+
+"set background=dark
+"set langmap=e2,š3,c4,r5,ž6,ý7,á8,í9,é0,/":,-/,_?
+set lines=80
+set columns=166
+"set guifont=Courier_New:h10:cEASTEUROPE
+set guifont=Lucida_Console:h10:cEASTEUROPE
+"set guifont=Courier_New:h10
+
+" Maximize gvim on startup. Note we Dutch must use
+" ~m, English/American people use ~x
+au GUIEnter * simalt ~x
+au GUIEnter simalt ~v<cr>
+
+map <C-q>l :set invnumber<cr>
+map <C-q>w :set invwrap<cr>
+map <C-q>m :SignatureToggleSigns<cr>
+map <C-q>/ :s/\\/\//g<cr>
+
+map <Leader>co :%s///gn<CR>
+
+"search selection
+function! s:VSetSearch()
+    let temp = @s
+    norm! gv"sy
+    let @/ = '\V' . substitute(escape(@s, '/\'), '\n', '\\n', 'g')
+    let @s = temp
+endfunction
+xnoremap * :<C-u>call <SID>VSetSearch()<CR>/<C-R>=@/<CR><CR>
+xnoremap # :<C-u>call <SID>VSetSearch()<CR>?<C-R>=@/<CR><CR>
+
+set tabstop=4        "velikost tabu 
+set softtabstop=4 
+set incsearch        "postupne vyhledavani zapnuto
+set ignorecase       "ignoruj pri hledadni velka a mala pismena
+set nowrap           "nezalamuj radky
+set autoindent       "automaticky odsazuj
+
+set fileencodings=utf-8,latin2,cp1250  "jaka vsechna kodovani se mohou objevit
+"set fileencodings=utf-8
+set encoding=utf-8
+
+
+
+"set tag=./tags,~/.vim/tags/python.tags,../tags,c:/moje/vyvoj/pythonpyGame/example/solarwolf-1.5/tags  "?
+set tag=./tags,~/.vim/tags/python.tags,../tags,c:/projects/DMS/notSVNProjects/EHCache_issue/ehcache/src_SMAZ/java/tags
+
+filetype on          "automaticka detekce typu souboru
+"filetype indent on   "automaticka detekce odsazovani !!!!!TODO
+filetype plugin on
+
+"z dokumentace k pathogenu
+syntax on
+filetype plugin indent on
+
+
+set mouse=a          "s mysi jde vse lepe :-)
+
+set exrc                    " Povol lokální konfigurace.
+set secure                  " V lokálních konfiguracích bezpecnostní prvky.
+
+set backup                  " vytvárení záložních kopií
+set backupext:.bak          " záložní kopie bude mít na konci .bak
+set confirm                 " pokud má operace selhat, ukáže se dialog
+"set fileformat:unix         " U nových souboru rádky zakoncuj jenom pomocí LF.
+set fileformats:dos,unix    " U otevrených souboru proved rozpoznávání.
+
+set errorbells              " 
+
+set backspace:2             " mazání i pres konec rádky
+set autoindent              " automatické odsazování
+set tabstop:4               " šírka tabelátoru je 4 sloupce
+
+"VYPNUTO KVULI VIM OUTLINERU:jinak bych to tu nechal nemam tab rad
+"POUZIT C+V TAB=VLOZI DOOPRAVDICKY TAB!!! i pri zapnute expandtab
+set expandtab               " nahrazuj tabelátory mezerami
+
+set smartindent
+set shiftwidth=4
+set smarttab
+
+set showmode                " zobrazí INSERT nebo REPLACE
+set showcmd                 " zobrazí zadávané príkazy norm. režimu
+set ruler                   " zobrazí pozici kurzoru
+
+set history:1000             " pamatuj si posledních 100 príkazu
+
+set nogdefault              " nahrazování nenahrazuje pouze první výskyt
+set showmatch               " ukazuje párovou závorku
+set nojoinspaces            " nevkládá 2 mezery za vetu pri spojování rádku
+
+set ignorecase              " vypne rozlišování velikosti písmen pri hledávání
+set smartcase               " velikosti rozlišuje jen pri zadání velkých písmen
+set incsearch               " text se hledá už pri jeho zadávání
+
+set scrolloff:1             " min. pocet rádku zobrazených nad a pod kurzorem
+set sidescroll:1            " pocet sloupcu, o které se text posouvá do stran
+set sidescrolloff:1         " min. pocet znaku zobrazených pred a za kurzorem
+
+let treeExplVertical=1
+
+" v insert módu ignoruj wrap rádky
+inoremap <Down> <C-O>gj
+inoremap <Up> <C-O>gk
+
+" Nastaví adresár pro ukládání záložních souboru.
+function SetSwapDirectory()
+let temp_swap_directory = ""
+if ($VIMTMP != "")
+  let temp_swap_directory = temp_swap_directory . $VIMTMP . ","
+endif    
+if ($TMP != "")
+  let temp_swap_directory = temp_swap_directory . $TMP . ","
+endif    
+if ($TEMP != "")
+  let temp_swap_directory = temp_swap_directory . $TEMP . ","
+endif
+let &directory = temp_swap_directory . "."
+let &backupdir = temp_swap_directory . "."
+endfunction
+
+" Ted nastav adresár pro ukládání záložních souboru.
+call SetSwapDirectory()
+
+" Nastaví text a pozadí podle promenné &background.
+function SetSyntaxByBackground()
+syntax on
+if (&background=="dark")
+  highlight Normal guibg=black guifg=white ctermbg=black ctermfg=white
+  so $VIM/vim74/colors/blue.vim
+else
+  highlight Normal guibg=white guifg=black ctermbg=white ctermfg=black
+  so $VIM/vim74/colors/github.vim
+  "so $VIM/vim74/colors/tomorow.vim
+  "so $VIM/vim74/colors/tomorrow.vim
+endif
+endfunction
+
+" Prepíná mezi bílé pozadí/cerný text a cerné pozadí/bílý text.
+function SwitchBackground()
+if (&background=="dark")
+  let &background="light"
+else
+  let &background="dark"
+endif
+call SetSyntaxByBackground()
+endfunction
+
+" Nastavení syntax highlighting.
+set background=light         " predbežne nastav
+set hlsearch                " pri hledání obarví všechny výskyty
+
+" Pokud se napíše na klávesnici postupne <F9>bgs, prepne se mezi bílým a cerným pozadím.
+call SetSyntaxByBackground()
+map <F9>bgs :call SwitchBackground()<kEnter>
+
+" Informace o uživateli
+let Meta_Author = "dave"
+let Meta_Login = "ja"
+
+" Nastavení pro program MAKE
+autocmd BufNewFile,BufRead makefile, *.mak set noexpandtab
+
+" HTML a spol. ponny adresar asi eni neavi me tohledat!!
+"autocmd BufNewFile *.htm,*.html,*.shtml,*.php4,*.php3,*.php r $VIM/ponny/win1250.html
+"autocmd BufNewFile,BufRead *.htm,*.html,*.shtml,*.php4,*.php3,*.php source $VIM/ponny/html.vim
+
+" Pri vytvorení souboru pro jazyk C, nebo C++ vloží hlavicku.
+" -- momentálne nefuguje --
+" autocmd BufNewFile *.h call Choose_And_Add_C_Or_Cpp_Header()
+" autocmd BufNewFile *.c call Add_Ponny_C_Header()
+" autocmd BufNewFile *.cc,*.cpp,*.hpp call Add_Ponny_Cpp_Header()
+
+
+
+"map <F3> :!c:/Winprog/Python26/python.exe % <CR>
+"map <F4> :!"c:/moje/vyvoj/instantRails/ruby/bin/ruby.exe" % <CR>
+"map <F4> :!"c:/moje/vyvoj/dev/groovy-1.7.7/bin/groovy.bat" -classpath . % <CR>
+
+"musi mit funkci main a ta se spusti
+"map <F5> :!"swipl -g main" % <CR>
+map <F5> :!c:/progs/swipl/bin/swipl.exe -g main % <CR>
+au BufRead,BufNewFile *.pl		set filetype=prolog
+"map <s-F5> :cal setSyn("prolog")<CR>
+
+"map <F5> :!c:/tmp/lua/lua5.1.exe % <CR>
+"map <F3> :!c:/moje/vyvoj/lua/lua/lua5.1.exe % <CR>
+"map <F3> :!c:/moje/vyvoj/lua/lua5.1.exe % <CR> 
+"map <S-F4> :!c:/progs/lua/lua52.exe % <CR>
+"map <F4> :!c:/progs/lua/lua52.exe % <CR>
+"map <F2> :!"c:\moje\vyvoj\games\luaAIO\lua.exe -d" % <CR> 
+"map <F2> :!c:/moje/vyvoj/lua/inter/luaAIO/lua.exe % \|more<CR> 
+"luaJIt s knihovnama ktere se vyviji!!!
+map <s-F6> :!c:/moje/vyvoj/lua/bluePil/c/lua-5.1.4/srcExampleJIT/luajit.exe % <CR>
+map <F6> :!c:/moje/vyvoj/lua/LuaJIT-2.0.0-beta7/luajit.exe % <CR> 
+
+map <c-F7> :cal setSyn("io")<CR>
+map <s-F7> :so $VIM/vim72/syntax/io.vim<CR>
+map <F7> :!c:\moje\vyvoj\dev\io\IoLanguage\bin\io.exe % <CR>
+
+"map <F3> :!c:\moje\vyvoj\dev\erl5.9.1\bin\escript.exe %<.beam <CR>
+"map <c-F3> :!c:\moje\vyvoj\dev\erl5.9.1\bin\erlc.exe % <CR>
+"map <c-F3> :!c:\progs\erl5.9.1\bin\erlc.exe % <CR>
+map <c-F3> :!c:\progs\erl5.10.3\bin\erlc.exe % <CR>
+map <s-F3> :!c:\progs\erl5.10.3\bin\erl.exe -noshell -s init stop -run %< main 1<CR>
+"map <F3> :!c:\moje\vyvoj\dev\erl5.9.1\bin\escript.exe % <CR>
+"map <F3> :!c:\progs\erl5.10.3\bin\escript.exe % <CR>
+"map <F3> :!go run % <CR>
+map <F3> :!c:\progs\Lua52\lua52.exe % <CR>
+map <F3> cpp
+map <c-F3> :!c:\projects\ext\cpp\LuaJIT-2.0.3\src\luajit.exe % <CR>
+map <c-F3> :!c:\moje\progs\lua\lua.exe % <CR>
+
+
+"map <F8> :!"c:\Program Files\VYVOJ\tcc\tcc.exe" % -o %<.exe <CR>
+map <c-F8> :!c:\progs\tcc\tcc.exe % -o %<.exe <CR>
+"map <c-F8> :!"c:\Program Files\VYVOJ\tcc\tcc.exe" -run -D_WIN32 -I"c:/moje/vyvoj/freeOpenGL/include" -L"c:/moje/vyvoj/freeOpenGL/lib" -lkernel32 -lfreeglut -lopengl32 -lglu32 -lglaux % <CR>
+map <F8> :!"c:\progs\tcc\tcc.exe" -run % <CR>
+"map <c-F8> :!c:\progs\scala-2.9.1.final\bin\scala.bat  % <CR>
+"map <s-F2> :!java -cp .;c:\progs\clojure-1.4.0\clojure-1.4.0.jar clojure.main % <CR>
+"map <s-F2> :!java -cp .;c:\progs\clojure-1.4.0\clojure-1.4.0.jar -Djava.security.policy=c:/progs/Vim/4clojure_policy.all/4clojure_policy.all  clojure.main % <CR>
+"map <s-F2> :!java -cp .;c:\progs\clojure-1.5.1\clojure-1.5.1.jar clojure.main % <CR>
+map <s-F2> :!java -cp .;c:/progs/clojure/clojure-1.6.0.jar;c:/progs/clojure/incanter.jar clojure.main % <CR>
+"map <c-s-F2> :!java -cp .;c:/progs/clojure/incanter.jar incanter.main % <CR>
+"map <c-s-F2> :!java -cp .;c:/progs/clojure/incanter.jar clojure.main % <CR>
+map <c-s-F2> :Connect nrepl://localhost:50358<CR>
+
+"map <c-F9> :!"c:/Program Files/Java/jdk1.6.0_21/bin/javac.exe" -d . % <CR>
+"map <F9> :!java -classpath . %< <CR>
+""map <c-F9> :!c:/progs/java/jdk1.6.0_33/bin/javac.exe -d . -encoding UTF-8 % <CR>
+"map <F9> :!c:/progs/java/jdk1.6.0_33/bin/java.exe -classpath . %< <CR>
+"c:/progs/Java/jdk1.7.0_45
+"map <c-F9> :!c:/progs/Java/jdk1.7.0_45/bin/javac.exe -d . -encoding UTF-8 % <CR>
+"map <F9> :!c:/progs/Java/jdk1.7.0_45/bin/java.exe -classpath . %< <CR>
+let s:my_sw = 'c:/progs/IBM/WebSphere/AppServer/java'
+"let s:portablepy = 'C:\portable\PortablePython_1.1_py2.5.4'
+"map <c-F9> :!s:mysw/bin/javac.exe -d . -encoding UTF-8 % <CR>
+map <c-F9> :!javac.exe -d . -encoding UTF-8 % <CR>
+map <F9> :!java.exe -classpath . %< <CR>
+
+"let JAVA_HOME = 'c:/progs/IBM/WebSphere/AppServer/java'
+"map <c-F9> :!$JAVA_HOME/bin/javac.exe -d . -encoding UTF-8 % <CR>
+"map <F9> :!$JAVA_HOME/bin/java.exe -classpath . %< <CR>
+"map <F9> :exe "%! " . $JAVA_HOME . "/bin/java.exe -classpath . %< " <CR>
+
+"c:/progs/IBM/WebSphere/AppServer/java
+"map <c-F9> :!c:/progs/IBM/WebSphere/AppServer/java/bin/javac.exe -d . -encoding UTF-8 % <CR>
+"map <F9> :!c:/progs/IBM/WebSphere/AppServer/java/bin/java.exe -classpath . %< <CR>
+
+
+
+
+" Klávesová zkratka <F9> c zkontroluje správnost syntaxe prekladacem jazyka C.
+" Klávesová zkratka <F9> p zkontroluje správnost syntaxe prekladacem jazyka C++.
+"map <F9>ccc :update<kEnter>:!test_cpp.bat %<kEnter>
+"map <F9>cpp :update<kEnter>:!test_cpp.bat %<kEnter>
+
+"map <F5> :!c:\progs\io\IoLanguage\bin\io.exe %<CR>
+"map <F5> :!c:\progs\Julia-0.3.6\bin\julia.exe %<CR>
+"map <c-F4> :!c:\progs\Ruby193\bin\ruby.exe % <CR>
+map <F4> :!c:\progs\Python34\python.exe % <CR>
+"map <F4> :!"c:\progs\Python27\python.exe" % <CR>
+"           c:\progs\Python27\python.exe 
+"map <F4> :!"C:\progs\Haskell Platform\2014.2.0.0\bin\runghc.exe" % <CR>
+"map <c-F4> :!"C:\progs\Haskell Platform\2014.2.0.0\bin\ghc.exe" % <CR>
+
+map <c-F6>   :!c:/progs/autoIt/autoit3.exe /ErrorStdOut % <CR>    
+map <c-s-F6> :!c:/progs/autoIt/aut2exe/aut2exe.exe" /in % <CR>
+
+
+"map <F12> <ESC>:Tlist<CR>hs:VTreeExplore<CR>:set nonu<CR>l
+map <F2> :w<CR>
+
+autocmd BufNewFile,BufRead *.* sy sync minlines=500
+
+let @q='}jdd''''$p0'
+"pro stahovani bluesharmonica a yzobavani mp4 linku z flashe
+let @p = '^i<a href=$i>link</a>'
+
+
+let g:NERDTreeWinPos = "right"
+"let tlist_java_settings = 'java;p:package;c:class;i:interface;f:field;m:method'
+let tlist_java_settings = 'java;m:method'
+"let g:paredit_leader = ' ' "funguje, ale <leaader>up maze!!!!!
+"let g:paredit_leader = ',' 
+let g:tagbar_left = 1
+let g:SignatureEnabledAtStartup=0
+"let g:rainbow_active = 1 
+"0 if you want to enable it later via :RainbowToggle
+"autocmd BufNewFile,BufRead *.clj RainbowToggle
+autocmd BufNewFile,BufRead *.clj RainbowParenthesesToggle
+"au VimEnter * RainbowParenthesesToggle
