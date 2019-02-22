@@ -13,6 +13,11 @@
 (package-initialize)
 (when (not package-archive-contents) (package-refresh-contents))
 
+;;add kotlinc to exec-path 
+;;(setq exec-path (append exec-path '("c:/dev/kotlin/bin")))
+(setq exec-path (append exec-path '("c:/dev/JetBrains/IntelliJ IDEA 2018.3.4/plugins/Kotlin/kotlinc/bin")))
+
+
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
@@ -25,7 +30,7 @@
  '(inhibit-startup-screen t)
  '(package-selected-packages
    (quote
-    (typescript-mode typescript pacmacs feature-mode gherkin-mode vimish-fold clj-refactor markdown-mode+ markdown-preview-mode kibit-helper buffer-move evil-numbers marmalade-client slime love-minor-mode lua-mode github-modern-theme github-theme darcula-theme imenu-list magit helm evil-leader which-key evil-paredit paredit rainbow-delimiters neotree evil-visual-mark-mode rainbow-mode evil)))
+    (kotlin-mode typescript-mode typescript pacmacs feature-mode gherkin-mode vimish-fold clj-refactor markdown-mode+ markdown-preview-mode kibit-helper buffer-move evil-numbers marmalade-client slime love-minor-mode lua-mode github-modern-theme github-theme darcula-theme imenu-list magit helm evil-leader which-key evil-paredit paredit rainbow-delimiters neotree evil-visual-mark-mode rainbow-mode evil)))
  '(size-indication-mode t)
  '(tool-bar-mode nil))
 (custom-set-faces
@@ -49,8 +54,26 @@
 
 (setq lua-default-application "c:/moje/progs/lua/lua.exe") 
 ;;(setq diff-path "c:/moje/progs/diff3/bin") ;;no effect
-(setq ediff-diff3-program "c:/moje/progs/diff3/bin/diff3.exe") ;;stejne jeste nekde nastavit vertikalni diff!!!
+;;(setq ediff-diff3-program "c:/moje/progs/diff3/bin/diff3.exe") ;;stejne jeste nekde nastavit vertikalni diff!!!
+;;                         c:\dev\diff3\bin\diff3.exe 
+(setq ediff-diff3-program "c:/dev/diff3/bin/diff3.exe") ;;stejne jeste nekde nastavit vertikalni diff!!!
+(setq ediff-diff-program "c:/dev/diff3/bin/diff.exe") ;;stejne jeste nekde nastavit vertikalni diff!!!
 ;                c:\moje\progs\Vim\vim74\diff.exe 
+(setq magit-ediff-dwim-show-on-hunks t)
+
+(setq ediff-split-window-function 'split-window-horizontally)
+;;(custom-set-variables
+;; '(ediff-window-setup-function 'ediff-setup-windows-plain)
+;; '(ediff-diff-options "-w")
+;; '(ediff-split-window-function 'split-window-horizontally))
+
+
+
+
+(setq split-width-threshold 0)
+;;split-window-sensibly
+(setq split-height-threshold nil) 
+
 
 (setq slime-default-lisp 'ccl)
 (setq inferior-lisp-program "c:/moje/progs/ccl/wx86cl64.exe")
@@ -161,6 +184,7 @@
         ("j" "Journal" entry (file+datetree "~/org/journal.org")
          "* %?\nEntered on %U\n %i\n %a")))
 
+
 ;;save when focus out
 (add-hook 'focus-out-hook 'save-all)
 (global-set-key (kbd "<f2>") 'save-buffer)
@@ -170,7 +194,7 @@
 (global-set-key (kbd "C-c i") 'imenu-list-smart-toggle)
 (global-set-key (kbd "C-c n") 'neotree-toggle)
 (global-set-key (kbd "C-c w") 'superword-mode) ; doma mi to nefunguje!!!
-(global-set-key (kbd "C-c M-g") 'magit-status)
+(global-set-key (kbd "C-c g") 'magit-status)
 ;;(global-set-key (kbd "C-x M-g") 'magit-status+popus) ASI stare!!!
 ;;
 ;(global-set-key (kbd "C-c /") (evil-ex "s/\\\\///g<CR>"))
